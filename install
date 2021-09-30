@@ -1,0 +1,3 @@
+#!/bin/sh
+pip install -r ./api/requirements.txt
+npm install --prefix ./ui

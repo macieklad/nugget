@@ -1,1 +1,0 @@
-# Implementation of a business process mining tool
