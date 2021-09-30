@@ -10,3 +10,5 @@ Install all required packages for ui and api by running the `./install` script
 
 # Development
 Starting both ui and api components in parallel is achieved by running the `./dev` script. You may be prompted to install `concurrently` - a node package that runs multiple tasks together.
+
+Ui will be started on localhost:3000, and the api is hosted on localhost:5000
