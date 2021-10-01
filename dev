@@ -1,2 +1,2 @@
-#!/bin/sh
+source ./activate
 npx concurrently --kill-others "cd ./api && flask run" "cd ./ui && npm run dev"

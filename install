@@ -1,3 +1,4 @@
-#!/bin/sh
+python3 -m venv ./api/venv
+source ./activate
 pip install -r ./api/requirements.txt
 npm install --prefix ./ui
