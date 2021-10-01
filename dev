@@ -1,2 +1,2 @@
 source ./activate
-npx concurrently --kill-others "cd ./api && flask run" "cd ./ui && npm run dev"
+npx concurrently --kill-others "cd ./api && FLASK_ENV=development flask run" "cd ./ui && npm run dev"

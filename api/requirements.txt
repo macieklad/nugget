@@ -6,6 +6,7 @@ cycler==0.10.0
 decorator==5.1.0
 deprecation==2.1.0
 Flask==2.0.1
+Flask-Cors==3.0.10
 graphviz==0.17
 intervaltree==3.1.0
 ipython==7.28.0
