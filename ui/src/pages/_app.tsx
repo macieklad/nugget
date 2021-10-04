@@ -1,6 +1,9 @@
 import type { AppProps } from 'next/app'
 import { ChakraProvider } from '@chakra-ui/react'
 
+import 'bpmn-js/dist/assets/diagram-js.css'
+import 'bpmn-js/dist/assets/bpmn-font/css/bpmn.css'
+
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider>

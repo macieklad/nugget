@@ -7,7 +7,7 @@ import os
 
 def create_example_model() -> str:
     loc = os.path.dirname(__file__)
-    log_path = os.path.join(loc, '../examples/data/running-example.xes')
+    log_path = os.path.join(loc, '../../examples/data/running-example.xes')
     log = xes_importer.apply(log_path)
     net, im, fm = alpha_miner.apply(log)
     bpmn = converter.apply(net, im, fm, variant=converter.Variants.TO_BPMN)

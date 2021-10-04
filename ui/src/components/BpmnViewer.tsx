@@ -1,6 +1,6 @@
 import React from 'react'
 
-import BpmnJS from 'bpmn-js/dist/bpmn-navigated-viewer.production.min.js'
+import BpmnJS from 'bpmn-js/lib/Modeler'
 
 export interface BpmnViewerProps {
   diagramXML?: string
@@ -79,7 +79,6 @@ export default class BpmnViewer extends React.Component<
 
   displayDiagram(diagramXML: string) {
     this.bpmnViewer.importXML(diagramXML)
-    this.bpmnViewer.get('canvas').zoom('fit-viewport')
   }
 
   fetchDiagram(url: string) {
@@ -118,7 +117,7 @@ export default class BpmnViewer extends React.Component<
   render() {
     return (
       <div
-        className="react-bpmn-diagram-container"
+        className="canvas"
         style={{
           height: '100vh',
         }}
