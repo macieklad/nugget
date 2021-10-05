@@ -6,3 +6,6 @@ from typing import List
 class ProcessModel:
     name: str
     files: List[str]
+
+    def json(self):
+        return self.__dict__

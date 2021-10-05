@@ -5,19 +5,22 @@ import { Box, Center, Heading, Text, VStack } from '@chakra-ui/layout'
 import { listModels } from '../lib/api/list-models'
 import { ProcessModel } from '../lib/api/types'
 import { Button } from '@chakra-ui/button'
+import { generateRandomName } from '../lib/utils'
+import { useMemo } from 'react'
+import { Card } from '../components/Card'
 
 interface HomeProps {
   models: ProcessModel[]
 }
 
 const Home: NextPage<HomeProps> = ({ models }) => {
+  const newModelName = useMemo(() => generateRandomName(), [])
   return (
     <Center flexDirection="column" h="100vh">
-      <Box shadow="lg" borderRadius="md" px={10} py={12} minW={420}>
-        <Heading size="lg">Twoje modele</Heading>
+      <Card title="Twoje modele">
         <VStack spacing={2} pt={4} pb={8} alignItems="flex-start">
           {models.map((model) => (
-            <Link key={model.name} href={`/model/${model.name}`}>
+            <Link key={model.name} href={`/model/${model.name}`} passHref>
               <Text fontSize="lg">- {model.name}</Text>
             </Link>
           ))}
@@ -26,12 +29,17 @@ const Home: NextPage<HomeProps> = ({ models }) => {
           )}
         </VStack>
         <VStack>
-          <LinkButton href="/viewer" w="full" colorScheme="orange">
+          <LinkButton
+            passHref
+            href={`/model/${newModelName}`}
+            w="full"
+            colorScheme="orange"
+          >
             Stwórz nowy model
           </LinkButton>
           <Button w="full">Instrukcja</Button>
         </VStack>
-      </Box>
+      </Card>
     </Center>
   )
 }
