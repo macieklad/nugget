@@ -18,8 +18,8 @@ class Datastore:
     def rename_model(self, model: str, to: str) -> ProcessModel:
         pass
 
-    def store_file(self, model: str, file: str) -> ProcessModel:
+    def store_file(self, model: str, id: str, loc: str) -> ProcessModel:
         pass
 
-    def read_file(self, model: str, file: str) -> str:
+    def read_file(self, model: str, id: str) -> str:
         pass

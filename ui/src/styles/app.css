@@ -1,1 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Display:wght@400;600&display=swap');
+
+.filepond--credits {
+  display: none;
+}
+
+[data-filepond-item-state='processing-complete'] .filepond--item-panel {
+  background-color: #48bb78 !important;
+}
