@@ -10,11 +10,14 @@ import { EditIcon } from '@chakra-ui/icons'
 import { createPondEndpoint, Pond } from '../../components/Pond'
 import { LinkButton } from '../../components/LinkButton'
 import { Button } from '@chakra-ui/button'
+import { apiUrl } from '../../lib/api/client'
 interface ModelPageProps {
   model: ProcessModel
 }
 
 const ModelPage: NextPage<ModelPageProps> = ({ model }) => {
+  console.log(apiUrl(`/model/${model.name}/event-log`))
+
   const [title, setTitle] = useState(model.name)
   return (
     <Center flexDirection="column" h="100vh">
@@ -39,10 +42,8 @@ const ModelPage: NextPage<ModelPageProps> = ({ model }) => {
         </InputGroup>
         <Box py={2} />
         <Pond
-          server={createPondEndpoint({
-            model: model.name,
-            fileId: 'event-log',
-          })}
+          model={model}
+          fileId={'event-log'}
           labelIdle='Najpierw upuść tutaj, bądź <span class="filepond--label-action">wybierz</span> dziennik zdarzeń z twojego komputera'
         />
         <VStack>
@@ -82,7 +83,7 @@ const ModelPage: NextPage<ModelPageProps> = ({ model }) => {
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   let name: string = ctx.params?.id as string
-  let model: ProcessModel = { name: 'unknown', files: [] }
+  let model: ProcessModel = { name: 'unknown', files: {} }
   try {
     model = await loadModel(name)
   } catch (e) {

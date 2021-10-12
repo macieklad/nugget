@@ -21,5 +21,5 @@ class Datastore:
     def store_file(self, model: str, id: str, loc: str) -> ProcessModel:
         pass
 
-    def read_file(self, model: str, id: str) -> str:
+    def delete_file(self, model: str, id: str) -> ProcessModel:
         pass

@@ -53,18 +53,16 @@ class FsStore(Datastore):
 
         instance.files[id] = ModelFile(loc=file_loc)
 
-        print(instance.files)
-
         self.write_meta(instance)
         return instance
 
-    def read_file(self, model: str, file: str) -> str:
+    def delete_file(self, model: str, id: str) -> ProcessModel:
         instance = self.load_model(model)
-        if not file in instance.files.keys():
-            raise ModelFileNotFoundException(
-                "Model does not contain file %s" % file)
-        with open(os.path.join(self.get_model_location(model), instance[file]), 'r') as data:
-            return data.read()
+        if id in instance.files:
+            os.remove(instance.files[id].loc)
+            del instance.files[id]
+        self.write_meta(instance)
+        return instance
 
     def load_model(self, model: str) -> ProcessModel:
         if not self.model_exists(model):

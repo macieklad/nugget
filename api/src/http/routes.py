@@ -1,6 +1,7 @@
 import json
 import os
 import traceback
+import flask
 
 from werkzeug.utils import secure_filename
 from flask_cors import CORS, cross_origin
@@ -64,13 +65,10 @@ def update_model():
     return model.json()
 
 
-@routes.post('/file')
-def upload_file():
+@routes.post("/file/<model>/<id>")
+def upload_file(model, id):
     fn = ""
     file_names = []
-    model = request.form.get('model')
-    file_id = request.form.get('file_id')
-
     for key in request.files:
         file = request.files[key]
         fn = secure_filename(file.filename)
@@ -81,9 +79,20 @@ def upload_file():
             if not os.path.exists(upload_dir):
                 os.makedirs(upload_dir)
             file.save(path)
-            storage.store_file(model, file_id, path)
+            storage.store_file(model, id, path)
         except Exception as err:
             traceback.print_exc()
             print('save fail: %s, got error %s' % (fn, err))
 
     return json.dumps({'filename': [f for f in file_names]})
+
+
+@routes.get("/file/<model>/<id>")
+def get_model_file(model, id):
+    model = storage.load_model(model)
+    return flask.send_file(model.files[id].loc)
+
+
+@routes.delete("/file/<model>/<id>")
+def delete_model_file(model, id):
+    return storage.delete_file(model, id).json()
