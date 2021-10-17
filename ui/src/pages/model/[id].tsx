@@ -7,77 +7,53 @@ import { createModel } from '../../lib/api/create-model'
 import { loadModel } from '../../lib/api/load-model'
 import { ProcessModel } from '../../lib/api/types'
 import { EditIcon } from '@chakra-ui/icons'
-import { createPondEndpoint, Pond } from '../../components/Pond'
+import { Pond } from '../../components/Pond'
 import { LinkButton } from '../../components/LinkButton'
 import { Button } from '@chakra-ui/button'
-import { apiUrl } from '../../lib/api/client'
+import { ModelContextProvider } from '../../context/ModelContext'
+import { ModelActions } from '../../components/ModelActions'
+import { FilePondOptions } from 'filepond'
+import { detectEventLogFileType } from '../../lib/validation/detectEventLogFileType'
 interface ModelPageProps {
   model: ProcessModel
 }
 
 const ModelPage: NextPage<ModelPageProps> = ({ model }) => {
-  console.log(apiUrl(`/model/${model.name}/event-log`))
-
   const [title, setTitle] = useState(model.name)
   return (
-    <Center flexDirection="column" h="100vh">
-      <Card>
-        <InputGroup>
-          <InputLeftElement pointerEvents="none">
-            <EditIcon color="orange" />
-          </InputLeftElement>
-          <Input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            fontSize="lg"
-            border="none"
-            borderBottomWidth={1}
-            borderBottomStyle="solid"
-            borderBottomColor="orange"
-            borderRadius="none"
-            _focus={{
-              outline: 'none',
-            }}
+    <ModelContextProvider model={model}>
+      <Center flexDirection="column" h="100vh">
+        <Card>
+          <InputGroup>
+            <InputLeftElement pointerEvents="none">
+              <EditIcon color="orange" />
+            </InputLeftElement>
+            <Input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              fontSize="lg"
+              border="none"
+              borderBottomWidth={1}
+              borderBottomStyle="solid"
+              borderBottomColor="orange"
+              borderRadius="none"
+              _focus={{
+                outline: 'none',
+              }}
+            />
+          </InputGroup>
+          <Box py={2} />
+          <Pond
+            acceptedFileTypes={['text/csv', 'text/xml']}
+            fileValidateTypeDetectType={detectEventLogFileType}
+            model={model}
+            fileId={'event-log'}
+            labelIdle='Najpierw upuść tutaj, bądź <span class="filepond--label-action">wybierz</span> dziennik zdarzeń z twojego komputera'
           />
-        </InputGroup>
-        <Box py={2} />
-        <Pond
-          model={model}
-          fileId={'event-log'}
-          labelIdle='Najpierw upuść tutaj, bądź <span class="filepond--label-action">wybierz</span> dziennik zdarzeń z twojego komputera'
-        />
-        <VStack>
-          <LinkButton
-            passHref
-            href={`/model/${model.name}/edit`}
-            w="full"
-            colorScheme="orange"
-          >
-            Generowanie modelu
-          </LinkButton>
-          <LinkButton
-            passHref
-            href={`/model/${model.name}/edit`}
-            w="full"
-            colorScheme="green"
-            disabled
-          >
-            Wizualizacja i edycja modelu
-          </LinkButton>
-          <Button colorScheme="blue" w="full" disabled>
-            Eksportuj model do pliku
-          </Button>
-          <LinkButton
-            passHref
-            href={`/model/${model.name}/metrics`}
-            w="full"
-            disabled
-          >
-            Zobacz metryki dla odkrytego modelu
-          </LinkButton>
-        </VStack>
-      </Card>
-    </Center>
+          <ModelActions />
+        </Card>
+      </Center>
+    </ModelContextProvider>
   )
 }
 

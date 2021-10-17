@@ -79,12 +79,16 @@ def upload_file(model, id):
             if not os.path.exists(upload_dir):
                 os.makedirs(upload_dir)
             file.save(path)
-            storage.store_file(model, id, path)
+            updated_model = storage.store_file(model, id, path)
+            return json.dumps({
+                'filename': [f for f in file_names],
+                'data': updated_model.files[id].json(),
+                'id': id
+            })
         except Exception as err:
             traceback.print_exc()
             print('save fail: %s, got error %s' % (fn, err))
-
-    return json.dumps({'filename': [f for f in file_names]})
+            return {}, 500
 
 
 @routes.get("/file/<model>/<id>")
