@@ -23,3 +23,6 @@ class Datastore:
 
     def delete_file(self, model: str, id: str) -> ProcessModel:
         pass
+
+    def write_meta(self, model: ProcessModel):
+        pass

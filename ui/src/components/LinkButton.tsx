@@ -19,7 +19,7 @@ export const LinkButton: React.FC<LinkProps> = ({
     replace={replace}
     scroll={scroll}
     shallow={shallow}
-    passHref={passHref}
+    passHref={true}
     prefetch={prefetch}
     locale={locale}
   >

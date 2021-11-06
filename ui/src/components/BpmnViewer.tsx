@@ -8,6 +8,7 @@ export interface BpmnViewerProps {
   onShown?: (warnings: any) => {}
   onLoading?: () => {}
   onError?: (err: Error) => {}
+  onSetViewer?: (viewer: any) => any
 }
 
 export interface BpmnViewerState {
@@ -35,6 +36,9 @@ export default class BpmnViewer extends React.Component<
     const container = this.containerRef.current
 
     this.bpmnViewer = new BpmnJS({ container })
+    if (this.props.onSetViewer) {
+      this.props.onSetViewer(this.bpmnViewer)
+    }
 
     this.bpmnViewer.on('import.done', (event: any) => {
       const { error, warnings } = event
@@ -43,7 +47,7 @@ export default class BpmnViewer extends React.Component<
         return this.handleError(error)
       }
 
-      this.bpmnViewer.get('canvas').zoom('fit-viewport')
+      this.bpmnViewer.get('canvas').zoom('fit-viewport', 'auto')
 
       return this.handleShown(warnings)
     })

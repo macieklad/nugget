@@ -30,7 +30,6 @@ const Home: NextPage<HomeProps> = ({ models }) => {
         </VStack>
         <VStack>
           <LinkButton
-            passHref
             href={`/model/${newModelName}`}
             w="full"
             colorScheme="orange"

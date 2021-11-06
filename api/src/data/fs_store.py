@@ -1,6 +1,7 @@
 import os
 import shutil
 from typing import List
+from datetime import datetime
 
 import json
 from .exceptions import ModelFileNotFoundException, ModelNotFoundException
@@ -49,9 +50,14 @@ class FsStore(Datastore):
         instance = self.load_model(model)
         file_loc = os.path.join(
             self.get_model_location(model), os.path.basename(loc))
-        shutil.copy(loc, self.get_model_location(model))
 
-        instance.files[id] = ModelFile(loc=file_loc)
+        try:
+            shutil.copy(loc, self.get_model_location(model))
+        except shutil.SameFileError:
+            pass
+
+        instance.files[id] = ModelFile(
+            loc=file_loc, updated_at=datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
 
         self.write_meta(instance)
         return instance
@@ -89,7 +95,6 @@ class FsStore(Datastore):
 
     def write_meta(self, model: ProcessModel):
         raw = json.dumps(model.json())
-        print(raw)
         meta_loc = os.path.join(
             self.get_model_location(model.name), "meta.json")
         with open(meta_loc, "w") as file:

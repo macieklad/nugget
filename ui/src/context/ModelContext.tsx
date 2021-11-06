@@ -3,6 +3,7 @@ import { createContext, Dispatch, Reducer, useContext, useReducer } from 'react'
 import { ProcessModel } from '../lib/api/types'
 
 export enum ModelAction {
+  REFRESH,
   UPDATE_FILES,
   REMOVE_FILES,
   RENAME,
@@ -20,6 +21,8 @@ const initialState: ProcessModel = {
 
 const reducer: Reducer<ProcessModel, Action> = (state, action) => {
   switch (action.type) {
+    case ModelAction.REFRESH:
+      return action.payload
     case ModelAction.UPDATE_FILES:
       const files = {
         ...state.files,

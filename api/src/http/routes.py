@@ -4,10 +4,15 @@ import traceback
 import flask
 
 from werkzeug.utils import secure_filename
-from flask_cors import CORS, cross_origin
 from ..data.exceptions import ModelNotFoundException
+from ..domain.constants import MODEL_FILE_PROCESS
 
 from ..algo.example import create_example_model
+from ..algo.alpha_miner import alpha_miner
+from ..algo.inductive_miner import inductive_miner
+from ..algo.heuristic_miner import heuristic_miner
+from ..algo.dfg import dfg
+
 from ...config import storage
 from ..utils import upload_path
 from ...config import upload_dir
@@ -55,11 +60,6 @@ def update_model():
         new_name = request.json.get('new_name')
         if new_name is not None:
             model = storage.rename_model(model_name, new_name)
-        if 'file' in request.files:
-            file = request.files['file']
-            path = upload_path(file.filename)
-            file.save(path)
-            model = storage.store_file(model_name, file_id, path)
     except ModelNotFoundException:
         abort(404, description="Model does not exist")
     return model.json()
@@ -91,6 +91,26 @@ def upload_file(model, id):
             return {}, 500
 
 
+@routes.post("/file/<model>/<id>/raw")
+def upload_file_contents(model, id):
+    contents = request.json.get('contents')
+    ext = ''
+
+    if id == MODEL_FILE_PROCESS:
+        ext = '.bpmn'
+
+    dir = upload_path(model)
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+
+    fp = upload_path("%s/%s%s" % (model, id, ext))
+
+    with open(fp, 'w') as file:
+        file.write(contents)
+
+    return storage.store_file(model, id, fp).json()
+
+
 @routes.get("/file/<model>/<id>")
 def get_model_file(model, id):
     model = storage.load_model(model)
@@ -100,3 +120,33 @@ def get_model_file(model, id):
 @routes.delete("/file/<model>/<id>")
 def delete_model_file(model, id):
     return storage.delete_file(model, id).json()
+
+
+@routes.post("/models/<model>/discover")
+def discover_model(model):
+    instance = storage.load_model(model)
+    algorithm = request.json.get('algorithm')
+    model_path = os.path.join(storage.get_model_location(model), "model.bpmn")
+
+    if not instance.has_event_log():
+        abort(404, description="Model does not have an event log")
+
+    log = instance.event_log()
+    metrics = None
+    if algorithm == "alpha-miner":
+        metrics = alpha_miner(log, model_path)
+    elif algorithm == "inductive-miner":
+        metrics = inductive_miner(log, model_path)
+    elif algorithm == "heuristic-miner":
+        metrics = heuristic_miner(log, model_path)
+    elif algorithm == "dfg":
+        metrics = dfg(log, model_path)
+    else:
+        abort(404, description="Specified algorithm does not exist")
+
+    instance = storage.store_file(model, MODEL_FILE_PROCESS, model_path)
+    instance.discovered_with = algorithm
+    instance.metrics = metrics
+    storage.write_meta(instance)
+
+    return instance.json()
