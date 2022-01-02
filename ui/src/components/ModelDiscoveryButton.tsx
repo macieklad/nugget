@@ -33,7 +33,17 @@ export const ModelDiscoveryButton: React.FC<ModelActionsProps> = ({}) => {
 
   const onSubmit = async () => {
     setFetching.on()
-    const process = await discoverProcess(model.name, selectedAlgorithm)
+    try {
+      const process = await discoverProcess(model.name, selectedAlgorithm)
+    } catch (e: any) {
+      toast({
+        title: `Error encountered: ${e.response.data}`,
+        status: 'error',
+      })
+      setFetching.off()
+      return
+    }
+
     toast({
       title: 'Model procesu został odkryty!',
       status: 'success',
