@@ -7,7 +7,6 @@ from werkzeug.utils import secure_filename
 from ..data.exceptions import ModelNotFoundException
 from ..domain.constants import MODEL_FILE_PROCESS
 
-from ..algo.example import create_example_model
 from ..algo.alpha_miner import alpha_miner
 from ..algo.inductive_miner import inductive_miner
 from ..algo.heuristic_miner import heuristic_miner
@@ -19,13 +18,6 @@ from ...config import upload_dir
 
 from flask import Blueprint, request, make_response, abort
 routes = Blueprint('routes', __name__)
-
-
-@routes.get("/example")
-def example():
-    response = make_response(create_example_model(), 200)
-    response.mimetype = "text/plain"
-    return response
 
 
 @routes.get("/model/<name>")
@@ -73,7 +65,6 @@ def upload_file(model, id):
         file = request.files[key]
         fn = secure_filename(file.filename)
         file_names.append(fn)
-        print('filename: ', fn)
         try:
             path = upload_path(fn)
             if not os.path.exists(upload_dir):
@@ -131,18 +122,22 @@ def discover_model(model):
     if not instance.has_event_log():
         abort(404, description="Model does not have an event log")
 
-    log = instance.event_log()
+    log = instance.event_log().loc
     metrics = None
-    if algorithm == "alpha-miner":
-        metrics = alpha_miner(log, model_path)
-    elif algorithm == "inductive-miner":
-        metrics = inductive_miner(log, model_path)
-    elif algorithm == "heuristic-miner":
-        metrics = heuristic_miner(log, model_path)
-    elif algorithm == "dfg":
-        metrics = dfg(log, model_path)
-    else:
-        abort(404, description="Specified algorithm does not exist")
+
+    try:
+        if algorithm == "alpha-miner":
+            metrics = alpha_miner(log, model_path)
+        elif algorithm == "inductive-miner":
+            metrics = inductive_miner(log, model_path)
+        elif algorithm == "heuristic-miner":
+            metrics = heuristic_miner(log, model_path)
+        elif algorithm == "dfg":
+            metrics = dfg(log, model_path)
+        else:
+            abort(404, description="Specified algorithm does not exist")
+    except Exception as err:
+        return str(err), 400
 
     instance = storage.store_file(model, MODEL_FILE_PROCESS, model_path)
     instance.discovered_with = algorithm
