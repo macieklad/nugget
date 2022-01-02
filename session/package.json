@@ -1,0 +1,12 @@
+{
+  "name": "session",
+  "scripts": {
+    "start": "fastify start -p 5001 server.mjs",
+    "dev": "fastify start --watch -p 5001 server.mjs"
+  },
+  "dependencies": {
+    "fastify": "^3.25.2",
+    "fastify-cli": "^2.14.0",
+    "make-promises-safe": "^5.1.0"
+  }
+}
