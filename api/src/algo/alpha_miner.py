@@ -12,8 +12,8 @@ from ..domain.ModelFile import ModelFile
 from ..domain.ModelMetrics import ModelMetrics
 
 
-def alpha_miner(event_log: ModelFile, bpmn_out: str) -> ModelMetrics:
-    log = xes_importer.apply(event_log.loc)
+def alpha_miner(event_log: str, bpmn_out: str) -> ModelMetrics:
+    log = xes_importer.apply(event_log)
     net, im, fm = miner.apply(log)
     bpmn = converter.apply(net, im, fm, variant=converter.Variants.TO_BPMN)
 
