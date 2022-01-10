@@ -21,10 +21,11 @@ To start working with the tool, visit the ui address shown in the earlier sectio
 
 The first step is to select available model from the menu, or to create a new one by using the button at the bottom. The model name will be created automatically, remember to take your time and enjoy the cool title. 
 
-![Home screen](./docs/home.png)
+![Home](./docs/home.png)
 
 After creating a model, you will be taken to the control panel. First, you will have to upload a model file. Simply drag a XES or CSV file into the specified file upload, and wait for the process to finish. Next, another action button will unlock, enabling you to discover process models.
-![Menu](./docs/menu.png)
+
+![HMenu](./docs/menu.png)
 
 ## Process discovery
 If the event log is uploaded, you can select the second available button responsible for the process discovery. A modal will be shown, giving you four options to select. After chosing an algorithm, you will be allowed to start process discovery. The progress information will be streamed in the dialog box below, and after waiting for the process to finish, the modal will close and you will be informed about the process completion. If there are any errors, another toast will pop up with an appropriate error message. Finally, the remaining buttons should unlock after the model is discovered correctly.
@@ -35,10 +36,13 @@ If the event log is uploaded, you can select the second available button respons
 
 ## Model inspection, editing and exports
 The third action you can do, assuming the log is uploaded and the model discovered, is to view and edit the discovered model. After navigating to the model editor through the third button, you will be presented with the bpmn viewer. You can traverse the graph and edit it, and after you are satisfied with the result, clicking the save button in the bottom-right corner of the screen will store the modified model on the server. You can then export the edited BPMN diagram by going back to the control panel and export it using the last button in the menu.
+
 ![Event log upload](./docs/unlocked_actions.png)
 ![Model generation](./docs/model_editor.png)
+
 ## Metrics and additional statistics
 When the model is generated, you can view its metrics, such as simplicty and generalization. After navigating to the metrics screen through the fourth button, metrics will be shown. There is also a special button. By clicking it, you will trigger the generation of additional statistics. They are all generated in form of svg files, so after waiting for a moment, the ui will trigger the download of a zip file that contains of all created diagrams.
+
 ![Model generation](./docs/statistics.png)
 
 Visual exploration of the tool, with the actions described in this section are shown on a video below.
