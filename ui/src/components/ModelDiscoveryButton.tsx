@@ -35,25 +35,24 @@ export const ModelDiscoveryButton: React.FC<ModelActionsProps> = ({}) => {
     setFetching.on()
     try {
       const process = await discoverProcess(model.name, selectedAlgorithm)
+
+      toast({
+        title: 'Model procesu został odkryty!',
+        status: 'success',
+      })
+      dispatch({
+        type: ModelAction.REFRESH,
+        payload: process,
+      })
+      setFetching.off()
+      onClose()
     } catch (e: any) {
       toast({
         title: `Error encountered: ${e.response.data}`,
         status: 'error',
       })
       setFetching.off()
-      return
     }
-
-    toast({
-      title: 'Model procesu został odkryty!',
-      status: 'success',
-    })
-    dispatch({
-      type: ModelAction.REFRESH,
-      payload: process,
-    })
-    setFetching.off()
-    onClose()
   }
 
   return (

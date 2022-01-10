@@ -17,6 +17,13 @@ interface Action {
 const initialState: ProcessModel = {
   name: 'Unset',
   files: {},
+  metrics: {
+    fitness: {},
+    prec_aetc: -1,
+    prec_etc: -1,
+    gen: -1,
+    simp: -1,
+  },
 }
 
 const reducer: Reducer<ProcessModel, Action> = (state, action) => {

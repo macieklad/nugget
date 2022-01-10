@@ -11,7 +11,7 @@ export type ModelActionsProps = {}
 
 export const ModelActions: React.FC<ModelActionsProps> = ({}) => {
   const { state: model } = useModelContext()
-  const isEditable = !model.files[ModelFiles.PROCESS]
+  const isEditable = model.files && model.files[ModelFiles.PROCESS]
   return (
     <VStack>
       <ModelDiscoveryButton />
@@ -19,7 +19,7 @@ export const ModelActions: React.FC<ModelActionsProps> = ({}) => {
         href={`/model/${model.name}/edit`}
         w="full"
         colorScheme="green"
-        disabled={isEditable}
+        disabled={!isEditable}
       >
         Wizualizacja i edycja modelu
       </LinkButton>
@@ -27,7 +27,7 @@ export const ModelActions: React.FC<ModelActionsProps> = ({}) => {
       <LinkButton
         href={`/model/${model.name}/metrics`}
         w="full"
-        disabled={isEditable}
+        disabled={!isEditable}
       >
         Zobacz metryki dla odkrytego modelu
       </LinkButton>
