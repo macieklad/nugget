@@ -42,3 +42,6 @@ When the model is generated, you can view its metrics, such as simplicty and gen
 ![Model generation](./docs/statistics.png)
 
 Visual exploration of the tool, with the actions described in this section are shown on a video below.
+
+https://user-images.githubusercontent.com/11617741/148853991-14d5bfb0-7098-42f7-a9be-67a18c32251a.mp4
+
