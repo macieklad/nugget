@@ -8,7 +8,7 @@ from pm4py.algo.evaluation.precision import algorithm as precision_evaluator
 from pm4py.algo.evaluation.generalization import algorithm as generalization_evaluator
 from pm4py.algo.evaluation.simplicity import algorithm as simplicity_evaluator
 
-from ..domain.ModelMetrics import ModelMetrics
+from src.domain.ModelMetrics import ModelMetrics
 
 
 def inductive_miner(event_log: str, bpmn_out: str) -> ModelMetrics:

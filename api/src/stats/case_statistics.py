@@ -5,7 +5,7 @@ import pm4py
 import os
 import shutil
 from pm4py.statistics.eventually_follows.log import get as efg_get
-from ...config import storage
+from config import storage
 import os
 import shutil
 

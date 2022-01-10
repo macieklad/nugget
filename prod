@@ -1,0 +1,1 @@
+npx --yes concurrently --kill-others "cd ./api && gunicorn --bind localhost:5000 --workers=4 wsgi:app" "cd ./ui && npm run start" "cd ./session && npm run start"

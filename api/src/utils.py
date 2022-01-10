@@ -1,7 +1,7 @@
 import os
 import sys
 import threading
-from ..config import upload_dir
+from config import upload_dir
 
 
 def upload_path(file: str):

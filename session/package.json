@@ -1,7 +1,7 @@
 {
   "name": "session",
   "scripts": {
-    "start": "fastify start -p 5001 server.mjs",
+    "start": "nodemon server.mjs",
     "dev": "nodemon server.mjs"
   },
   "dependencies": {

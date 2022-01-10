@@ -1,10 +1,8 @@
 from dataclasses import dataclass
 from typing import Dict, List
-from api.src.domain.ModelMetrics import ModelMetrics
-
-from api.src.domain.constants import MODEL_FILE_EVENT_LOG
-
-from .ModelFile import ModelFile
+from src.domain.ModelMetrics import ModelMetrics
+from src.domain.constants import MODEL_FILE_EVENT_LOG
+from src.domain.ModelFile import ModelFile
 
 
 @dataclass

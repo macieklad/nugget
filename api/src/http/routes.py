@@ -11,19 +11,19 @@ import concurrent.futures
 import requests
 
 from werkzeug.utils import secure_filename
-from ..data.exceptions import ModelNotFoundException
-from ..domain.constants import MODEL_FILE_PROCESS
+from src.data.exceptions import ModelNotFoundException
+from src.domain.constants import MODEL_FILE_PROCESS
 
-from ..algo.alpha_miner import alpha_miner
-from ..algo.inductive_miner import inductive_miner
-from ..algo.heuristic_miner import heuristic_miner
-from ..algo.dfg import dfg
+from src.algo.alpha_miner import alpha_miner
+from src.algo.inductive_miner import inductive_miner
+from src.algo.heuristic_miner import heuristic_miner
+from src.algo.dfg import dfg
 
-from ..stats.case_statistics import generate_case_statistics
+from src.stats.case_statistics import generate_case_statistics
 
-from ...config import storage
-from ..utils import upload_path, SysRedirect
-from ...config import upload_dir
+from config import storage
+from src.utils import upload_path, SysRedirect
+from config import upload_dir
 
 from flask import Blueprint, request, make_response, abort
 routes = Blueprint('routes', __name__)
