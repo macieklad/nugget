@@ -1,3 +1,4 @@
+import sys
 from flask import Flask, Blueprint, jsonify
 from flask_cors import CORS
 from .src.http.routes import routes

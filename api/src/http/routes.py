@@ -2,6 +2,11 @@ import json
 import os
 import traceback
 import flask
+import sys
+import threading
+import logging
+import time
+import concurrent.futures
 
 from werkzeug.utils import secure_filename
 from ..data.exceptions import ModelNotFoundException
@@ -13,7 +18,7 @@ from ..algo.heuristic_miner import heuristic_miner
 from ..algo.dfg import dfg
 
 from ...config import storage
-from ..utils import upload_path
+from ..utils import upload_path, SysRedirect
 from ...config import upload_dir
 
 from flask import Blueprint, request, make_response, abort
@@ -122,20 +127,21 @@ def discover_model(model):
     if not instance.has_event_log():
         abort(404, description="Model does not have an event log")
 
-    log = instance.event_log().loc
     metrics = None
-
     try:
-        if algorithm == "alpha-miner":
-            metrics = alpha_miner(log, model_path)
-        elif algorithm == "inductive-miner":
-            metrics = inductive_miner(log, model_path)
-        elif algorithm == "heuristic-miner":
-            metrics = heuristic_miner(log, model_path)
-        elif algorithm == "dfg":
-            metrics = dfg(log, model_path)
-        else:
-            abort(404, description="Specified algorithm does not exist")
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future = executor.submit(
+                discover, algorithm, instance.event_log().loc, model_path)
+
+            while future.running():
+                # Ask if not disconneted
+                # Send some time log
+                # future.cancel() if not connected
+                print('running')
+                time.sleep(.5)
+
+            metrics = future.result()
+
     except Exception as err:
         return str(err), 400
 
@@ -145,3 +151,19 @@ def discover_model(model):
     storage.write_meta(instance)
 
     return instance.json()
+
+
+def discover(algorithm: str, log: str, model_path: str):
+    metrics = None
+    if algorithm == "alpha-miner":
+        metrics = alpha_miner(log, model_path)
+    elif algorithm == "inductive-miner":
+        metrics = inductive_miner(log, model_path)
+    elif algorithm == "heuristic-miner":
+        metrics = heuristic_miner(log, model_path)
+    elif algorithm == "dfg":
+        metrics = dfg(log, model_path)
+    else:
+        abort(404, description="Specified algorithm does not exist")
+
+    return metrics
