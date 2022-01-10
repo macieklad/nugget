@@ -6,11 +6,14 @@ import '../styles/app.css'
 import 'bpmn-js/dist/assets/diagram-js.css'
 import 'bpmn-js/dist/assets/bpmn-font/css/bpmn.css'
 import theme from '../definitions/theme'
+import { WebsocketContextProvider } from '../context/WebsocketContext'
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider theme={theme}>
-      <Component {...pageProps} />
+      <WebsocketContextProvider>
+        <Component {...pageProps} />
+      </WebsocketContextProvider>
     </ChakraProvider>
   )
 }

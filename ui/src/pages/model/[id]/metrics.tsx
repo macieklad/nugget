@@ -15,6 +15,8 @@ import { algorithmNames } from '../../../lib/constants'
 import { uploadRawFile } from '../../../lib/api/upload-raw-file'
 import { useToast } from '@chakra-ui/toast'
 import { useBoolean } from '@chakra-ui/hooks'
+import { Box } from '@chakra-ui/react'
+import { generateStats } from '../../../lib/api/generate-stats'
 interface ModelPageProps {
   model: ProcessModel
 }
@@ -30,8 +32,27 @@ const Stat: React.ComponentType<{ name: string; value?: number | string }> = ({
 
 const EditModelPage: NextPage<ModelPageProps> = ({ model: sourceModel }) => {
   const [model, setModel] = useState<ProcessModel>(sourceModel)
-  const url = apiUrl(`/file/${model.name}/${ModelFiles.PROCESS}`)
   const toast = useToast()
+  const [isFetching, setFetching] = useBoolean()
+
+  const onGenerateStats = async () => {
+    setFetching.on()
+    try {
+      await generateStats(model.name)
+
+      toast({
+        title: 'Statystyki zostały wygenerowane!',
+        status: 'success',
+      })
+      setFetching.off()
+    } catch (e: any) {
+      toast({
+        title: `Error encountered: ${e.response?.data}`,
+        status: 'error',
+      })
+      setFetching.off()
+    }
+  }
 
   return (
     <ModelContextProvider model={model}>
@@ -58,9 +79,17 @@ const EditModelPage: NextPage<ModelPageProps> = ({ model: sourceModel }) => {
                 />
                 <Stat name="Generalization" value={model.metrics.gen} />
                 <Stat name="Simplicity" value={model.metrics.simp} />
+                <Box mb={2} />
+                <Button
+                  w="full"
+                  colorScheme="blue"
+                  onClick={onGenerateStats}
+                  isLoading={isFetching}
+                >
+                  Wygeneruj i pobierz dodatkowe statystki
+                </Button>
               </VStack>
             </Card>
-            <Card title="Statystyki dziennika"></Card>
           </HStack>
         </VStack>
       </Center>

@@ -11,14 +11,16 @@ import {
   useBoolean,
   VStack,
   useToast,
+  Box,
 } from '@chakra-ui/react'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ModelAction, useModelContext } from '../context/ModelContext'
 import { ModelDiscoveryAlgorithm } from './ModelDiscoveryAlgorithm'
 import { DiscoveryAlgorithm, ModelFiles } from '../lib/api/constants'
 import { discoverProcess } from '../lib/api/discover-model'
 import { algorithmNames } from '../lib/constants'
+import { useWebsocketContext } from '../context/WebsocketContext'
 
 export type ModelActionsProps = {}
 
@@ -30,11 +32,21 @@ export const ModelDiscoveryButton: React.FC<ModelActionsProps> = ({}) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [isFetching, setFetching] = useBoolean()
   const toast = useToast()
+  const { getWebSocket, sessionID, messageHistory } = useWebsocketContext()
+
+  const discoveryMessages = messageHistory
+    .filter(Boolean)
+    .filter((ev: any) => ev?.data.includes(`${sessionID}-discovery:`))
+    .map((ev: any) => ev.data.replace(`${sessionID}-discovery:`, ''))
 
   const onSubmit = async () => {
     setFetching.on()
     try {
-      const process = await discoverProcess(model.name, selectedAlgorithm)
+      const process = await discoverProcess(
+        model.name,
+        selectedAlgorithm,
+        sessionID
+      )
 
       toast({
         title: 'Model procesu został odkryty!',
@@ -48,7 +60,7 @@ export const ModelDiscoveryButton: React.FC<ModelActionsProps> = ({}) => {
       onClose()
     } catch (e: any) {
       toast({
-        title: `Error encountered: ${e.response.data}`,
+        title: `Error encountered: ${e.response?.data || e}`,
         status: 'error',
       })
       setFetching.off()
@@ -84,6 +96,16 @@ export const ModelDiscoveryButton: React.FC<ModelActionsProps> = ({}) => {
                 />
               ))}
             </VStack>
+            <Box py={4} maxH="200px" overflowY="scroll">
+              <details>
+                <summary>Logi odkrywania</summary>
+                {discoveryMessages.map((message, index) => (
+                  <Box key={index} py={2}>
+                    {message}
+                  </Box>
+                ))}
+              </details>
+            </Box>
           </ModalBody>
           <ModalFooter>
             <Button
@@ -95,7 +117,9 @@ export const ModelDiscoveryButton: React.FC<ModelActionsProps> = ({}) => {
             >
               Generuj
             </Button>
-            <Button variant="ghost">Zamknij</Button>
+            <Button variant="ghost" onClick={onClose}>
+              Zamknij
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

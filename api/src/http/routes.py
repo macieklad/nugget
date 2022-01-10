@@ -6,7 +6,9 @@ import sys
 import threading
 import logging
 import time
+from datetime import timedelta
 import concurrent.futures
+import requests
 
 from werkzeug.utils import secure_filename
 from ..data.exceptions import ModelNotFoundException
@@ -16,6 +18,8 @@ from ..algo.alpha_miner import alpha_miner
 from ..algo.inductive_miner import inductive_miner
 from ..algo.heuristic_miner import heuristic_miner
 from ..algo.dfg import dfg
+
+from ..stats.case_statistics import generate_case_statistics
 
 from ...config import storage
 from ..utils import upload_path, SysRedirect
@@ -44,6 +48,14 @@ def create_model():
     if name is None:
         abort(400, description="Model name is required while creating it")
     return storage.create_model(name).json()
+
+
+@routes.get("/model/stats/<model>")
+def get_additional_stats(model):
+    try:
+        return flask.send_file(generate_case_statistics(model))
+    except Exception as err:
+        return '%s: %s' % (str(err.__class__.__name__), str(err)), 400
 
 
 @routes.put("/models")
@@ -122,6 +134,7 @@ def delete_model_file(model, id):
 def discover_model(model):
     instance = storage.load_model(model)
     algorithm = request.json.get('algorithm')
+    session_id = request.json.get('sessionID')
     model_path = os.path.join(storage.get_model_location(model), "model.bpmn")
 
     if not instance.has_event_log():
@@ -132,15 +145,30 @@ def discover_model(model):
         with concurrent.futures.ThreadPoolExecutor() as executor:
             future = executor.submit(
                 discover, algorithm, instance.event_log().loc, model_path)
+            start = time.time()
+            ticks = 5
+            alive_tries = 0
 
+            publish("Starting discovery... ", session_id)
             while future.running():
-                # Ask if not disconneted
-                # Send some time log
-                # future.cancel() if not connected
-                print('running')
-                time.sleep(.5)
+                if ticks == 0:
+                    ticks = 5
+                    publish("Discovery in progress, elapsed time: %s" %
+                            timedelta(seconds=time.time() - start), session_id)
+
+                if not is_alive(session_id):
+                    alive_tries += 1
+
+                if alive_tries == 3:
+                    future.cancel()
+                    return "Client disconnected", 400
+
+                time.sleep(2)
+                ticks -= 1
 
             metrics = future.result()
+            publish("Discovery finished, elapsed time: %s" %
+                    timedelta(seconds=time.time() - start), session_id)
 
     except Exception as err:
         return str(err), 400
@@ -167,3 +195,13 @@ def discover(algorithm: str, log: str, model_path: str):
         abort(404, description="Specified algorithm does not exist")
 
     return metrics
+
+
+def publish(message: str, recipient: str, topic: str = 'discovery'):
+    requests.post('http://localhost:5001/publish',
+                  json=json.dumps('%s-%s:%s' % (recipient, topic, message)))
+
+
+def is_alive(id: str):
+    return requests.get('http://localhost:5001/alive',
+                        params={'id': id}).status_code == requests.codes.ok

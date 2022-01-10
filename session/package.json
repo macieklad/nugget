@@ -2,11 +2,13 @@
   "name": "session",
   "scripts": {
     "start": "fastify start -p 5001 server.mjs",
-    "dev": "fastify start --watch -p 5001 server.mjs"
+    "dev": "nodemon server.mjs"
   },
   "dependencies": {
     "fastify": "^3.25.2",
     "fastify-cli": "^2.14.0",
-    "make-promises-safe": "^5.1.0"
+    "fastify-websocket": "^4.0.0",
+    "make-promises-safe": "^5.1.0",
+    "nodemon": "^2.0.15"
   }
 }

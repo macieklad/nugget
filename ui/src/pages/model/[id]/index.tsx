@@ -1,7 +1,7 @@
 import { Input, InputGroup, InputLeftElement } from '@chakra-ui/input'
 import { Box, Center, VStack } from '@chakra-ui/layout'
 import type { GetServerSideProps, NextPage } from 'next'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Card } from '../../../components/Card'
 import { createModel } from '../../../lib/api/create-model'
 import { loadModel } from '../../../lib/api/load-model'
@@ -18,6 +18,7 @@ interface ModelPageProps {
 
 const ModelPage: NextPage<ModelPageProps> = ({ model }) => {
   const [title, setTitle] = useState(model.name)
+
   return (
     <ModelContextProvider model={model}>
       <Center flexDirection="column" h="100vh">
@@ -57,7 +58,7 @@ const ModelPage: NextPage<ModelPageProps> = ({ model }) => {
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   let name: string = ctx.params?.id as string
-  let model: ProcessModel = { name: 'unknown', files: {} }
+  let model: ProcessModel = { name: 'unknown', files: {}, metrics: {} as any }
   try {
     model = await loadModel(name)
   } catch (e) {
